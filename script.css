@@ -1,0 +1,32 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: sans-serif;
+    background-color: rgba(128, 128, 161, 0.788);
+}
+
+#grid-container {
+    /* Set a fixed size for the entire grid */
+    width: 960px; 
+    height: 960px;
+    
+    /* Display: grid is crucial, but column/row counts will be set in JS */
+    display: grid;
+    
+    /* Optional: visual border */
+    border: 1px solid #333;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.grid-square {
+    /* Basic styling for the squares */
+    background-color: #f0f0f0; /* Default background color (light gray) */
+    border: 1px solid #ccc; /* Subtle separation lines */
+    box-sizing: border-box; /* Ensures padding/border is inside the width/height */
+}
+#sketch{
+    box-sizing: content-box;
+    color: rgb(226, 212, 7);
+    
+}
