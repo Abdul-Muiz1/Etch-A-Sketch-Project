@@ -1,55 +1,87 @@
-// The current grid size (squares per side)
+// Global variables remain the same
 let currentGridSize = 16; 
-const CONTAINER_SIZE = 960; // Total width/height in pixels
+const CONTAINER_SIZE = 960; 
+const DARKEN_STEP = 0.1; // 10% darkening per interaction
 
-// Function to create the dynamic grid
+// --- HELPER FUNCTION: Generates a random RGB color string ---
+function getRandomRgb() {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+// --- CORE FUNCTION: Handles the color and darkening logic ---
+function handleHover(square) {
+    // 1. Initial interaction: Set the base color and darkness level
+    if (!square.dataset.color) {
+        // Set the random base color
+        const randomColor = getRandomRgb();
+        square.dataset.color = randomColor; 
+        
+        // Set the initial darkness level (0 for the first hit)
+        square.dataset.darkness = 0;
+        
+        // Apply the color immediately (0% darkened, which is the base color)
+        square.style.backgroundColor = randomColor;
+        return; // Exit after first hit
+    }
+
+    // 2. Subsequent interactions: Progressive Darkening
+    
+    // Retrieve the current darkness level and base color
+    let darkness = parseFloat(square.dataset.darkness);
+    
+    // Darken by 10% (0.1) unless it's already fully dark
+    if (darkness < 1.0) {
+        darkness += DARKEN_STEP;
+    }
+
+    // Apply the new darkness value
+    square.dataset.darkness = darkness;
+
+    // Apply the darkening effect using the CSS filter property
+    // A brightness value of 1.0 means full brightness (0% dark).
+    // A brightness value of 0.0 means completely black (100% dark).
+    // Since 'darkness' is the *amount* darkened, brightness is (1 - darkness)
+    square.style.filter = `brightness(${1.0 - darkness})`;
+}
+
+// --- GRID CREATION FUNCTION (Updated to use handleHover) ---
 function createGrid(size) {
     const container = document.getElementById('grid-container');
-    
-    // 1. Clear any existing grid squares
     container.innerHTML = ''; 
     
-    // 2. Dynamically set the grid template based on the user's size
-    // Example: if size is 64, it sets 64 columns and 64 rows, 
-    // each taking up 1 fractional unit (1fr) of the 960px space.
     container.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
     container.style.gridTemplateRows = `repeat(${size}, 1fr)`;
 
-    // Calculate the total number of squares (e.g., 16*16=256 or 64*64=4096)
     const totalSquares = size * size;
 
     for (let i = 0; i < totalSquares; i++) {
         const square = document.createElement('div');
         square.classList.add('grid-square');
-
-        // Add the hover effect to change the color
+        
+        // **Crucial Change:** Attach the new handler function
         square.addEventListener('mouseover', function() {
-            // Change the background color directly for the 'pen' effect
-            square.style.backgroundColor = 'black'; 
+            handleHover(square);
         });
 
         container.appendChild(square);
     }
-    // Update the global size tracker
     currentGridSize = size;
 }
 
 
-// New function called when the "Change Grid Size" button is clicked
+// --- BUTTON PROMPT FUNCTION (Remains the same as before) ---
 function promptForGridSize() {
-    // 1. Use the prompt() function to get user input
     let newSize = prompt('Enter the number of squares per side (max: 100):');
-    
-    // 2. Convert the input to an integer
     newSize = parseInt(newSize);
 
-    // 3. Input Validation (The "Tip" Requirement)
     if (isNaN(newSize) || newSize < 1 || newSize > 100) {
         alert('Invalid input. Please enter a number between 1 and 100.');
-        return; // Exit the function if validation fails
+        return; 
     }
 
-    // 4. If input is valid, destroy the old grid and create the new one
     createGrid(newSize);
 }
 
